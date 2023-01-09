@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-
+import jwt_decode from 'jwt-decode';
 
 export const generateToken = async (data) => {
     const token = jwt.sign(
@@ -8,4 +8,13 @@ export const generateToken = async (data) => {
       );
 
     return token;
+}
+
+export const getDecodedToken = (jwtToken) => {
+  if(!jwtToken) {
+    return false;
+  }
+
+  var decoded = jwt_decode(jwtToken);
+  return decoded
 }

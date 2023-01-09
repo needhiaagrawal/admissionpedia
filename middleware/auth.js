@@ -18,6 +18,6 @@ export const auth = async (req, res, next) => {
     logger.info(`Invalid request ${err}`);
 
     res.status(httpStatus.BAD_REQUEST)
-    return res.send({ success: false, err: err.messgae })
+    return res.send({ success: false, err: err.message })
   }
 };
