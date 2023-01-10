@@ -2,6 +2,7 @@
 import { School, APClass, Board, District } from '../models/index';
 
 import SchoolFacility from "../models/schoolFacility";
+import ShortlistedSchools from "../models/shortlistedSchools";
 import Facilities from "../models/facilities";
 import State from "../models/state";
 import Country from '../models/country';
@@ -10,6 +11,8 @@ import { Op } from "sequelize";
 import { getBoardList } from './board';
 import { getClassesList } from './class';
 import { APPLICATION_STATUS, GENDERS, DAY_BOARDING } from '../helper/constant';
+import { getDecodedToken } from '../../utils/user';
+import moment from 'moment';
 
 export const getDetailedSchoolData = async (school) => {
   const { classes, class: detailedClasses, ...rest } = school;
@@ -166,4 +169,41 @@ export const getSchoolSearchFiltersService = async () => {
   result.genders = GENDERS;
   result.dayBoarding = DAY_BOARDING;
   return result;
+}
+
+export const schoolShortlistedService = async (
+  token,
+  schoolId,
+  notification
+) => {
+  let userDataFromToken = getDecodedToken(token)
+  let alreadyShortlisted = await ShortlistedSchools.findOne({
+    where: { school_id: schoolId, user_id: userDataFromToken.userId }
+  })
+  console.log(alreadyShortlisted)
+  if (!alreadyShortlisted) {
+    const newShortlist = await ShortlistedSchools.create({
+      user_id: userDataFromToken.userId,
+      school_id: schoolId,
+      notification_flag: notification && notification == 'yes' ? 1 : 0,
+      created: moment().format(),
+      updated: moment().format()
+    })
+    const shortlistId = newShortlist.toJSON().id
+    return shortlistId
+  } else {
+    await ShortlistedSchools.update(
+      {
+        notification_flag: notification && notification == 'yes' ? 1 : 0,
+        updated: moment().format()
+      },
+      {
+        where: {
+          user_id: userDataFromToken.userId,
+          school_id: schoolId
+        }
+      }
+    )
+    return alreadyShortlisted.dataValues.id
+  }
 }

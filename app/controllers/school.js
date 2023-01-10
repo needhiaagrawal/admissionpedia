@@ -1,4 +1,4 @@
-import { getSchoolService, getSchoolDetailService, getSchoolSearchFiltersService } from '../service/school';
+import { getSchoolService, getSchoolDetailService, getSchoolSearchFiltersService, schoolShortlistedService } from '../service/school';
 import { STANDARD_SEARCH_LIMIT } from '../helper/constant';
 import httpStatus from 'http-status';
 import logger from '../../config/loggerconfig';
@@ -53,3 +53,20 @@ export const getSearchFilter = async (req, res) => {
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Something went wrong')
     }
 }
+
+export const schoolShortlisted = async (req, res) => {
+    try {
+        const token =(req.headers.authorization && req.headers.authorization.split(" ")[1]) || "";
+        const schoolId = req.params.schoolId;
+        const notification = req.query.notify || "no";
+        if (!schoolId) {
+            res.status(httpStatus.BAD_REQUEST).send('School Id is not passed')
+        }
+        const dbResult = await schoolShortlistedService(token, schoolId, notification);
+        logger.info('School Shortlisted successful' + JSON.stringify(dbResult));
+        res.status(httpStatus.OK).send("School shortlisted successfully");
+    } catch (err) {
+        logger.error('Error in req schoolShortlisted' + err.toString());
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Something went wrong')
+    }
+}   

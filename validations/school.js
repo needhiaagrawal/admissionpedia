@@ -11,3 +11,9 @@ export const getSchools = {
         residencyType: Joi.string().equal('Day And Boarding', 'Day', 'Boarding').optional(),
     }),
 };  
+
+export const schoolShorlisted = {
+    query: Joi.object().keys({
+        notify: Joi.string().allow('yes', 'no').optional(),
+    }),
+};  

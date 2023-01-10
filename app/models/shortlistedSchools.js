@@ -33,7 +33,7 @@ const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
 	updated: {
 		type: DataTypes.DATE,
         allowNull: false,
-		defaultValue: Sequelize.literal('NOW ON UPDATE NOW'),
+		defaultValue: sequelize.literal('NOW ON UPDATE NOW'),
 	},
 },
 	{
