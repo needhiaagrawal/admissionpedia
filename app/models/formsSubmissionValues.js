@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import Submission from './formsSubmissions';
 import sequelize from '../../config/db';
 
 const APFormsSubmissionsValues = sequelize.define('APFormsSubmissionsValues', {
@@ -9,8 +10,12 @@ const APFormsSubmissionsValues = sequelize.define('APFormsSubmissionsValues', {
 		primaryKey: true
 	},
 	submission_id: {
-		type: DataTypes.SMALLINT(6),
-		allowNull: false
+		type: DataTypes.STRING(12),
+		allowNull: false,
+		references: {
+			model: Submission,
+			key: 'id'
+		}
 	},
 	field_id: {
 		type: DataTypes.SMALLINT(6),
@@ -23,17 +28,17 @@ const APFormsSubmissionsValues = sequelize.define('APFormsSubmissionsValues', {
 	
 },
 {
+	tableName: 'ap_forms_submissions_values',
+	timestamps: false
+},
+{
     indexes: [
         {
             unique: true,
             fields: ['submission_id', 'field_id', 'field_value']
         }
     ]
-},
-	{
-		tableName: 'ap_forms_submissions_values',
-		timestamps: false
-	}
+}
 );
-
+APFormsSubmissionsValues.belongsTo(Submission, { as: 'submission', foreignKey: 'submission_id' });
 export default APFormsSubmissionsValues;

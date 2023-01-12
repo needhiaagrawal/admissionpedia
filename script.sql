@@ -148,10 +148,11 @@ CREATE TABLE `ap_forms_submissions` (
 --
 CREATE TABLE `ap_forms_submissions_values` (
   `id` int(11) NOT NULL auto_increment ,
-  `submission_id` int(11) NOT NULL,
+  `submission_id` varchar(12) NOT NULL,
   `field_id` int(11) NOT NULL,
   `field_value` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`submission_id`) REFERENCES `ap_forms_submissions` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ALTER TABLE `forms_submissions_values`
