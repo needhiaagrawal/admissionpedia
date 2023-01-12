@@ -3,7 +3,6 @@ import formsSubmissions from '../models/formsSubmissions'
 import formsSubmissionValues from '../models/formsSubmissionValues'
 import { getDecodedToken } from '../../utils/user'
 import moment from 'moment'
-import bcrypt from "bcrypt"
 
 export const getFieldsFixed = async () => {
   let list = await fieldsFixed.findAll({ raw: false })
