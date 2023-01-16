@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(
   cors({
-    allowedHeaders: ["sessionid", "content-type", "x-jwt-token"],
+    allowedHeaders: ["sessionid", "content-type", "x-jwt-token", "authorization"],
     exposedHeaders: ["sessionid"],
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
