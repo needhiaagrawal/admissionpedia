@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db';
 import School from './school';
+const Sequelize = require('sequelize');
 
 const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
 	id: {
@@ -15,7 +16,7 @@ const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
         // need to add reference later for userid
 	},
     school_id: {
-		type: DataTypes.INTEGER,
+		type: DataTypes.STRING,
 		allowNull: false,
         references: {
 			model: School,
@@ -33,7 +34,7 @@ const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
 	updated: {
 		type: DataTypes.DATE,
         allowNull: false,
-		defaultValue: sequelize.literal('NOW ON UPDATE NOW'),
+		defaultValue: Sequelize.literal('NOW ON UPDATE NOW'),
 	},
 },
 	{

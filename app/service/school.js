@@ -180,7 +180,6 @@ export const schoolShortlistedService = async (
   let alreadyShortlisted = await ShortlistedSchools.findOne({
     where: { school_id: schoolId, user_id: userDataFromToken.userId }
   })
-  console.log(alreadyShortlisted)
   if (!alreadyShortlisted) {
     const newShortlist = await ShortlistedSchools.create({
       user_id: userDataFromToken.userId,

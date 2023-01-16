@@ -23,3 +23,6 @@ export const oldQueries = []export const oldQueries = [
   "ALTER TABLE ap_users ADD email_verification_code varchar(10) unique",
   "ALTER TABLE ap_users ADD password_expiry_time datetime",
 ];
+
+export const oldQueries = ["INSERT INTO  ap_schools_classes_admission(school_id,class_id,start_date,end_date,status,fee,created,updated) 
+    VALUES ("INS003C6083FBF7",3,"2022-05-25 10:25:56","2024-06-25 10:25:56",1,150,"2021-05-25 10:25:56","2021-05-25 10:25:56")","ALTER TABLE ap_shortlisted_schools DROP COLUMN school_id","ALTER TABLE ap_shortlisted_schools ADD COLUMN school_id varchar(15)"]
