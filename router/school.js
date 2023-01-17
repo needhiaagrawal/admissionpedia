@@ -6,7 +6,7 @@ export const schoolRouter = express.Router();
 import { auth } from "../middleware/auth";
 
 schoolRouter.get('/shortlisted/:schoolId', auth, validate(schoolValidator.schoolShorlisted), school.schoolShortlisted);
-
+schoolRouter.get('/shortlisted', auth, school.getShortlistedSchool);
 schoolRouter.get('/search-filters', school.getSearchFilter);
 schoolRouter.get('/:schoolId', school.getSchoolDetails);
 schoolRouter.get('/', validate(schoolValidator.getSchools), school.getSchools);

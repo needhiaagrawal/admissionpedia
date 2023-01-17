@@ -1,4 +1,4 @@
-import { getSchoolService, getSchoolDetailService, getSchoolSearchFiltersService, schoolShortlistedService } from '../service/school';
+import { getSchoolService, getSchoolDetailService, getSchoolSearchFiltersService, schoolShortlistedService, shortlistedSchool } from '../service/school';
 import { STANDARD_SEARCH_LIMIT } from '../helper/constant';
 import httpStatus from 'http-status';
 import logger from '../../config/loggerconfig';
@@ -67,6 +67,18 @@ export const schoolShortlisted = async (req, res) => {
         res.status(httpStatus.OK).send("School shortlisted successfully");
     } catch (err) {
         logger.error('Error in req schoolShortlisted' + err.toString());
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Something went wrong')
+    }
+}   
+
+export const getShortlistedSchool = async (req, res) => {
+    try {
+        const token =(req.headers.authorization && req.headers.authorization.split(" ")[1]) || "";
+        const dbResult = await shortlistedSchool(token);
+        logger.info('getShortlistedSchool successful' + JSON.stringify(dbResult));
+        res.status(httpStatus.OK).send(dbResult);
+    } catch (err) {
+        logger.error('Error in req getShortlistedSchool' + err.toString());
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Something went wrong')
     }
 }   

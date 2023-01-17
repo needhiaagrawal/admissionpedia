@@ -206,3 +206,27 @@ export const schoolShortlistedService = async (
     return alreadyShortlisted.dataValues.id
   }
 }
+
+export const shortlistedSchool = async token => {
+  let userDataFromToken = getDecodedToken(token)
+  let rows = await ShortlistedSchools.findAll({
+    where: {
+      user_id: userDataFromToken.userId
+    },
+    include: [
+      {
+        model: School,
+        attributes: [
+          'name',
+          'address',
+          'gender_accepted',
+          'residency_type',
+          'admission_status'
+        ],
+        as: 'school',
+        raw: false
+      }
+    ]
+  })
+  return rows
+}

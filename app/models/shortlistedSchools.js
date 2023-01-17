@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db';
 import School from './school';
+import User from './user';
 const Sequelize = require('sequelize');
 
 const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
@@ -13,7 +14,10 @@ const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
 	user_id: {
 		type: DataTypes.INTEGER,
 		allowNull: false,
-        // need to add reference later for userid
+		references: {
+			model: User,
+			key: 'id'
+		}
 	},
     school_id: {
 		type: DataTypes.STRING,
@@ -41,5 +45,7 @@ const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
 		tableName: 'ap_shortlisted_schools',
 		timestamps: false
 	});
-
+	
+ShortlistedSchool.belongsTo(School, { as: 'school', foreignKey: 'school_id' }); 
+ShortlistedSchool.belongsTo(School, { as: 'user', foreignKey: 'user_id' }); 
 export default ShortlistedSchool;
