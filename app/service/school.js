@@ -14,7 +14,7 @@ import { APPLICATION_STATUS, GENDERS, DAY_BOARDING } from '../helper/constant';
 import { getDecodedToken } from '../../utils/user';
 import moment from 'moment';
 
-export const getDetailedSchoolData = async (school) => {
+export const getDetailedSchoolData = async (school, shortlisted=0) => {
   const { classes, class: detailedClasses, ...rest } = school;
   const newClasses = detailedClasses.map((classRow) => ({ id: classRow.id, name: classRow.name}));
 
@@ -36,6 +36,17 @@ export const getDetailedSchoolData = async (school) => {
       raw: false
     }]
   })
+  let isShortlisted = "no"
+
+  if(shortlisted == 1){
+    const shortlisted = await ShortlistedSchools.findOne({
+      where: { 'school_id': school.id }
+    });
+    if(shortlisted){
+      isShortlisted = "yes"
+    }
+    school.shortlisted = isShortlisted;
+  }
 
   const districtData = locationDetails.toJSON();
   return {
@@ -229,4 +240,95 @@ export const shortlistedSchool = async token => {
     ]
   })
   return rows
+}
+
+export const getSchoolsListService = async (token, fieldsData, limit) => {
+  let userDataFromToken = getDecodedToken(token)
+  const searchTerm = fieldsData.keyword;
+  const board = fieldsData.board || null;
+  const gender = fieldsData.gender || null;
+  const admissionStatus = fieldsData.admissionStatus || null; // need to discuss 
+  const district = fieldsData.district || null;
+  const residencyType = fieldsData.residencyType || null;
+  const classFilter = fieldsData.class || null;
+  const shortlistedFilter = fieldsData.shortlistedOnly || null;
+  let query = {
+    name: {
+      [Op.startsWith]: '%' + searchTerm + '%'
+    }
+  }; 
+
+  if (board) {
+    query = {
+      board_id: board,
+      ...query,
+    }
+  }
+
+  if (gender) {
+    query = {
+      gender_accepted: gender,
+      ...query,
+    }
+  }
+
+  if (district) {
+    query = {
+      "location.district_id": district,
+      ...query,
+    }
+  }
+  if (residencyType) {
+    query = {
+      residency_type: residencyType,
+      ...query,
+    }
+  }
+  if(admissionStatus && parseInt(admissionStatus) === 0 || parseInt(admissionStatus) === 1) {
+    query = {
+      admission_status: parseInt(admissionStatus),
+      ...query,
+    }
+  }
+  const classQuery = classFilter ? {
+    where: {
+      id: classFilter
+    },
+  } : {}
+  const shortlistQuery = shortlistedFilter ? {
+    where: {
+      user_id: userDataFromToken.userId
+    },
+  } : {}
+  let rows = await School.findAll({
+    attributes: ['name', 'address', 'gender_accepted', 'classes', 'residency_type', 'id', 'location', 'admission_status'],
+    where: query,
+    include: [{
+      model: Board,
+      attributes: ['name'],
+      as: 'board',
+      raw: false
+    }, {
+      model: APClass,
+      attributes: ['name', 'id'],
+      ...classQuery,
+      as: 'class',
+      raw: false
+    },{
+      model: ShortlistedSchools,
+      ...shortlistQuery,
+      as: 'ShortlistedSchool',
+      raw: false
+    }
+    ],
+    limit
+  })
+  rows = await Promise.all(rows.map(async (data, index) => {
+    if(data){
+      const row = data.toJSON();
+      const formattedSchoolData = await getDetailedSchoolData(row, 1);
+      return formattedSchoolData;
+    }
+  }))
+  return rows;
 }

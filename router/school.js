@@ -5,6 +5,7 @@ import * as schoolValidator from '../validations/school'
 export const schoolRouter = express.Router();
 import { auth } from "../middleware/auth";
 
+schoolRouter.get('/list', auth, validate(schoolValidator.getSchoolsList), school.getSchoolsForAuthorizedUser);
 schoolRouter.get('/shortlisted/:schoolId', auth, validate(schoolValidator.schoolShorlisted), school.schoolShortlisted);
 schoolRouter.get('/shortlisted', auth, school.getShortlistedSchool);
 schoolRouter.get('/search-filters', school.getSearchFilter);

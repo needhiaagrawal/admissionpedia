@@ -46,6 +46,6 @@ const ShortlistedSchool = sequelize.define('ShortlistedSchool', {
 		timestamps: false
 	});
 	
+export default ShortlistedSchool;
 ShortlistedSchool.belongsTo(School, { as: 'school', foreignKey: 'school_id' }); 
 ShortlistedSchool.belongsTo(School, { as: 'user', foreignKey: 'user_id' }); 
-export default ShortlistedSchool;
