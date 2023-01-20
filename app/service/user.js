@@ -6,6 +6,7 @@ import moment from 'moment';
 import { sendEmailOtp } from "../helper/sendEmail";
 import { generateToken } from "../../utils/user";
 import { sendOtpToMobile } from "../helper/sendOtp";
+import SchoolUser from "../models/schoolUsers";
 export const generateOtp = async () => {
     return stackOtp.numericOtp(6);
 }
@@ -233,6 +234,41 @@ export const loginService = async (username, password, usernameType) => {
                     mobile: user.mobile,
                     mobile_verified: user.mobile_verified,
                     email_verified: user.email_verified
+                });
+
+                return token
+            }
+        }
+        return null;
+    } catch (err) {
+
+        console.log("Error: in finding user", err);
+        return null;
+
+    }
+
+}
+
+export const schoolLoginService = async (username, password) => {
+
+    try {
+        const user = await SchoolUser.findOne({ attributes: ["name", "id", "email","email_verified", "password"], where: { email: username } });
+
+        if (user) {
+            const userData = user.toJSON();
+            const isPasswordCorrect = bcrypt.compareSync(password, userData.password);
+
+            if (!isPasswordCorrect) return null;
+            else {
+                const token = generateToken({
+                    username,
+                    userId: userData.id,
+                    usernameType,
+                    email: userData.email,
+                    mobile: user.mobile,
+                    mobile_verified: user.mobile_verified,
+                    email_verified: user.email_verified,
+                    role: "school-admin"
                 });
 
                 return token

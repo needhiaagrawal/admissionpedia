@@ -76,7 +76,10 @@ export const getShortlistedSchool = async (req, res) => {
         const token =(req.headers.authorization && req.headers.authorization.split(" ")[1]) || "";
         const dbResult = await shortlistedSchool(token);
         logger.info('getShortlistedSchool successful' + JSON.stringify(dbResult));
-        res.status(httpStatus.OK).send(dbResult);
+        res.status(httpStatus.OK).send({
+            success: true,
+            data: dbResult
+        });
     } catch (err) {
         logger.error('Error in req getShortlistedSchool' + err.toString());
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Something went wrong')
