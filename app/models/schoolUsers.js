@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../config/db';
 import School from './school';
+import sequelize from '../../config/db';
 
 const SchoolUser = sequelize.define('SchoolUser', {
 	id: {
@@ -28,7 +28,7 @@ const SchoolUser = sequelize.define('SchoolUser', {
     },
     school_id: {
         type: DataTypes.STRING(15),
-        allowNull: true, 
+        allowNull: false, 
         references: {
 			model: School,
 			key: 'id'
@@ -56,6 +56,5 @@ const SchoolUser = sequelize.define('SchoolUser', {
 	timestamps: false
 });
 
-SchoolUser.belongsTo(School, { as: 'school', foreignKey: 'school_id' });
-
 export default SchoolUser;
+SchoolUser.belongsTo(School, { as: 'school', foreignKey: 'school_id' }); 

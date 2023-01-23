@@ -308,23 +308,20 @@ export const login = async (req, res) => {
 }
 
 export const schoolLogin = async (req, res) => {
-    try {
-
-        const { userName, password } = req.body
-
-        // const userNameType = checkUserNameType(userName);
-        const userData = await schoolLoginService(userName, password);
-
-        if(!userData) {
-            res.status(httpStatus.BAD_REQUEST).send({ success: true, message: 'Incorrect credentials' })
-            return userData; 
-        } 
-
-        res.status(httpStatus.OK).send({ success: true, token: userData })
-        return userData; 
-    } catch (err) {
-        console.log('Error: ', + err)
-        logger.info('Error: ', + err)
-        res.status(httpStatus.BAD_REQUEST).send('something went wrong')
+  try {
+    const { userName, password } = req.body
+    // const userNameType = checkUserNameType(userName);
+    const userData = await schoolLoginService(userName, password)
+    if (!userData) {
+      res
+        .status(httpStatus.BAD_REQUEST)
+        .send({ success: false, message: 'Incorrect credentials' })
+      return userData
     }
+    res.status(httpStatus.OK).send({ success: true, token: userData })
+    return userData
+  } catch (err) {
+    logger.info('Error: ', +err)
+    res.status(httpStatus.BAD_REQUEST).send('something went wrong')
+  }
 }

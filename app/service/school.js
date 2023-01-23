@@ -6,7 +6,7 @@ import ShortlistedSchools from "../models/shortlistedSchools";
 import Facilities from "../models/facilities";
 import State from "../models/state";
 import Country from '../models/country';
-
+import ClassAdmission from '../models/schoolClassAdmission'
 import { Op } from "sequelize";
 import { getBoardList } from './board';
 import { getClassesList } from './class';
@@ -36,6 +36,18 @@ export const getDetailedSchoolData = async (school, shortlisted=0) => {
       raw: false
     }]
   })
+  const admissionDetails  = await ClassAdmission.findAll({
+    attributes: ['start_date','end_date'],
+    where: { school_id: school.id },
+    include: [
+      {
+        model: APClass,
+        attributes: ['name'],
+        as: 'className',
+        raw: false
+      }
+    ]
+  })
   let isShortlisted = "no"
 
   if(shortlisted == 1){
@@ -53,6 +65,7 @@ export const getDetailedSchoolData = async (school, shortlisted=0) => {
     ...rest,
     board: school.board.name,
     classes: newClasses,
+    admission: admissionDetails,
     status: school.status === 1 ? 'active' : 'archived',
     facilities,
     location: {
@@ -140,10 +153,11 @@ export const getSchoolService = async (searchTerm, board, gender, district, resi
 
 
   rows = await Promise.all(rows.map(async (data, index) => {
-    const row = data.toJSON();
-    const formattedSchoolData = await getDetailedSchoolData(row);
-    return formattedSchoolData;
-
+    if(data){
+      const row = data.toJSON();
+      const formattedSchoolData = await getDetailedSchoolData(row);
+      return formattedSchoolData;
+    }
   }))
   return rows;
 }

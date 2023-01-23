@@ -1,6 +1,7 @@
 import Classes from '../models/classes'
 import ClassAdmission from '../models/schoolClassAdmission'
 import SchoolClass from '../models/schoolClass'
+import School from '../models/school'
 import { getDecodedToken } from '../../utils/user'
 import moment from 'moment'
 
@@ -56,6 +57,14 @@ export const updateAdmissionStatus = async (token, dataFields) => {
         updated: moment().format()
       })
     }
+   await School.update(
+    { admission_status: 1, updated: moment().format() },
+    {
+      where: {
+        id: schoolId
+      }
+    }
+  )
   }
 }
 

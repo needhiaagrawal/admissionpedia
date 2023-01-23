@@ -59,9 +59,6 @@ export const schoolShortlisted = async (req, res) => {
         const token =(req.headers.authorization && req.headers.authorization.split(" ")[1]) || "";
         const schoolId = req.params.schoolId;
         const notification = req.query.notify || "no";
-        if (!schoolId) {
-            res.status(httpStatus.BAD_REQUEST).send('School Id is not passed')
-        }
         const dbResult = await schoolShortlistedService(token, schoolId, notification);
         logger.info('School Shortlisted successful' + JSON.stringify(dbResult));
         res.status(httpStatus.OK).send("School shortlisted successfully");
@@ -76,10 +73,7 @@ export const getShortlistedSchool = async (req, res) => {
         const token =(req.headers.authorization && req.headers.authorization.split(" ")[1]) || "";
         const dbResult = await shortlistedSchool(token);
         logger.info('getShortlistedSchool successful' + JSON.stringify(dbResult));
-        res.status(httpStatus.OK).send({
-            success: true,
-            data: dbResult
-        });
+        res.status(httpStatus.OK).send(dbResult);
     } catch (err) {
         logger.error('Error in req getShortlistedSchool' + err.toString());
         res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Something went wrong')
