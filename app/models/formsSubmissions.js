@@ -13,26 +13,26 @@ const APFormsSubmissions = sequelize.define('APFormsSubmissions', {
 	school_id: {
 		type: DataTypes.STRING(15),
 		allowNull: false,
-        // references: {
-		// 	model: School,
-		// 	key: 'id'
-		// }
+        references: {
+			model: School,
+			key: 'id'
+		}
 	},
 	class_id: {
 		type: DataTypes.SMALLINT(6),
 		allowNull: false,
-        // references: {
-		// 	model: Class,
-		// 	key: 'id'
-		// }
+        references: {
+			model: Class,
+			key: 'id'
+		}
 	},
 	user_id: {
 		type: DataTypes.SMALLINT(6),
 		allowNull: false,
-        // references: {
-		// 	model: User,
-		// 	key: 'id'
-		// }
+        references: {
+			model: User,
+			key: 'id'
+		}
 	},
 	status: {
 		type: DataTypes.TINYINT(4),
@@ -56,6 +56,6 @@ const APFormsSubmissions = sequelize.define('APFormsSubmissions', {
 
 export default APFormsSubmissions;
 
-// APFormsSubmissions.belongsTo(School, { as: 'school', foreignKey: 'school_id' }); 
-// APFormsSubmissions.belongsTo(Class,  { as: 'className', foreignKey: 'class_id'});
-// APFormsSubmissions.belongsTo(User, { as: 'user', foreignKey: 'user_id' }); 
+APFormsSubmissions.belongsTo(School, { as: 'school', foreignKey: 'school_id' }); 
+APFormsSubmissions.belongsTo(Class,  { as: 'className', foreignKey: 'class_id'});
+APFormsSubmissions.belongsTo(User, { as: 'user', foreignKey: 'user_id' }); 

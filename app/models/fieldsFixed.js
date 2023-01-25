@@ -38,7 +38,7 @@ const APFieldsFixed = sequelize.define('APFieldsFixed', {
 	},
 },
 	{
-		tableName: 'ap_fields_fixed',
+		tableName: 'fields_fixed',
 		timestamps: false
 	}
 );

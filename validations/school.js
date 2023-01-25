@@ -21,7 +21,7 @@ export const getSchoolsList = {
         district: Joi.number().optional(),
         class:  Joi.number().optional(),
         residencyType: Joi.string().equal('Day And Boarding', 'Day', 'Boarding').optional(),
-        shortlistOnly: Joi.boolean().optional()
+        shortlistedOnly: Joi.boolean().optional()
     }),
 };  
 

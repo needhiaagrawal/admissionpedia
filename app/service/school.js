@@ -16,7 +16,31 @@ import moment from 'moment';
 
 export const getDetailedSchoolData = async (school, shortlisted=0) => {
   const { classes, class: detailedClasses, ...rest } = school;
-  const newClasses = detailedClasses.map((classRow) => ({ id: classRow.id, name: classRow.name}));
+
+  const admissionDetails  = await ClassAdmission.findAll({
+    attributes: ['start_date','end_date', 'class_id', 'status', 'fee'],
+    where: { school_id: school.id },
+    include: [
+      {
+        model: APClass,
+        attributes: ['name'],
+        as: 'className',
+        raw: false
+      }
+    ]
+  })
+
+  const newClasses = detailedClasses.map((classRow) => {
+    const classAdmissionRowCheck = admissionDetails.filter((ele) => ele['class_id'] === classRow.id);
+    let start_date = null, end_date = null, admission_status = 0, fees = 0;
+    if (classAdmissionRowCheck.length) {
+        start_date = classAdmissionRowCheck[0]['start_date'];
+        end_date = classAdmissionRowCheck[0]['end_date'];
+        admission_status = classAdmissionRowCheck[0]['status'];
+        fees = classAdmissionRowCheck[0]['fee'];
+    }
+    return { id: classRow.id, name: classRow.name, start_date, end_date, fees, admission_status }
+  });
 
   const facilities = await SchoolFacility.findAll({
     where: { 'school_id': school.id },
@@ -36,18 +60,9 @@ export const getDetailedSchoolData = async (school, shortlisted=0) => {
       raw: false
     }]
   })
-  const admissionDetails  = await ClassAdmission.findAll({
-    attributes: ['start_date','end_date'],
-    where: { school_id: school.id },
-    include: [
-      {
-        model: APClass,
-        attributes: ['name'],
-        as: 'className',
-        raw: false
-      }
-    ]
-  })
+
+
+ 
   let isShortlisted = "no"
 
   if(shortlisted == 1){
@@ -65,8 +80,8 @@ export const getDetailedSchoolData = async (school, shortlisted=0) => {
     ...rest,
     board: school.board.name,
     classes: newClasses,
-    admission: admissionDetails,
-    status: school.status === 1 ? 'active' : 'archived',
+    status: school.status == 1 ? 'active' : 'archived',
+    admission_status: school.admission_status == 1 ? 'active' : 'archived',
     facilities,
     location: {
       ...school.location,
@@ -118,14 +133,21 @@ export const getSchoolService = async (searchTerm, board, gender, district, resi
     }
   }
 
-  if(admissionStatus && parseInt(admissionStatus) === 0 || parseInt(admissionStatus) === 1) {
+  if(admissionStatus && parseInt(admissionStatus) === 1) {
     query = {
-      admission_status: parseInt(admissionStatus),
+      admission_status: parseInt(admissionStatus) ,
       ...query,
     }
+  } else if(admissionStatus && parseInt(admissionStatus) === 0) {
+    query = {
+      admission_status: {
+        [Op.or]: [0, null] 
+      } ,
+      ...query,
+    }
+
   }
-
-
+  
   const classQuery = classFilter ? {
     where: {
       id: classFilter
@@ -133,7 +155,7 @@ export const getSchoolService = async (searchTerm, board, gender, district, resi
   } : {}
 
   let rows = await School.findAll({
-    attributes: ['name', 'address', 'gender_accepted', 'classes', 'residency_type', 'id', 'location', 'admission_status'],
+    attributes: ['name', 'address', 'gender_accepted', 'classes', 'residency_type', 'id', 'location', 'admission_status', 'status'],
     where: query,
     include: [{
       model: Board,
@@ -235,6 +257,7 @@ export const schoolShortlistedService = async (
 export const shortlistedSchool = async token => {
   let userDataFromToken = getDecodedToken(token)
   let rows = await ShortlistedSchools.findAll({
+    attributes: ['id', 'school_id', 'notification_flag'],
     where: {
       user_id: userDataFromToken.userId
     },
@@ -253,11 +276,27 @@ export const shortlistedSchool = async token => {
       }
     ]
   })
+
+  if (rows) {
+    const newRows  = await Promise.all(rows.map((row) => {
+      const data = row.toJSON();
+      const { school } = data;
+      return {
+        shortlisted: data.notification_flag,
+        id: data.id,
+        ...school
+      }
+    }))
+
+    return newRows;
+
+  }
   return rows
 }
 
 export const getSchoolsListService = async (token, fieldsData, limit) => {
-  let userDataFromToken = getDecodedToken(token)
+  let userDataFromToken = getDecodedToken(token);
+
   const searchTerm = fieldsData.keyword;
   const board = fieldsData.board || null;
   const gender = fieldsData.gender || null;
@@ -309,11 +348,25 @@ export const getSchoolsListService = async (token, fieldsData, limit) => {
       id: classFilter
     },
   } : {}
-  const shortlistQuery = shortlistedFilter ? {
-    where: {
-      user_id: userDataFromToken.userId
-    },
-  } : {}
+  
+  let shortlistQuery =  {}
+
+  if (shortlistedFilter)  {
+    const shortlistedSchoolsList = await shortlistedSchool(token);
+    shortlistQuery  = {
+      id: {
+        [Op.in]: shortlistedSchoolsList.map((row) => row.school_id).filter((row) => row)
+      }
+    }
+
+
+    query = {
+      ...shortlistQuery,
+      ...query
+    }
+  }
+
+
   let rows = await School.findAll({
     attributes: ['name', 'address', 'gender_accepted', 'classes', 'residency_type', 'id', 'location', 'admission_status'],
     where: query,
@@ -327,11 +380,6 @@ export const getSchoolsListService = async (token, fieldsData, limit) => {
       attributes: ['name', 'id'],
       ...classQuery,
       as: 'class',
-      raw: false
-    },{
-      model: ShortlistedSchools,
-      ...shortlistQuery,
-      as: 'ShortlistedSchool',
       raw: false
     }
     ],

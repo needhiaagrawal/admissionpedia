@@ -263,7 +263,6 @@ export const schoolLoginService = async (username, password) => {
                 const token = generateToken({
                     username,
                     userId: userData.id,
-                    usernameType,
                     email: userData.email,
                     mobile: user.mobile,
                     mobile_verified: user.mobile_verified,
