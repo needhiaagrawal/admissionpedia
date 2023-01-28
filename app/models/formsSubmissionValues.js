@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import Submission from './formsSubmissions';
 import sequelize from '../../config/db';
+import APFieldsFixed from './fieldsFixed';
 
 const APFormsSubmissionsValues = sequelize.define('APFormsSubmissionsValues', {
 	id: {
@@ -19,7 +20,11 @@ const APFormsSubmissionsValues = sequelize.define('APFormsSubmissionsValues', {
 	},
 	field_id: {
 		type: DataTypes.SMALLINT(6),
-		allowNull: false
+		allowNull: false,
+		references: {
+			model: APFieldsFixed,
+			key: 'id'
+		}
 	},
 	field_value: {
 		type: DataTypes.TEXT,
@@ -40,5 +45,8 @@ const APFormsSubmissionsValues = sequelize.define('APFormsSubmissionsValues', {
     ]
 }
 );
+
 APFormsSubmissionsValues.belongsTo(Submission, { as: 'submission', foreignKey: 'submission_id' });
+APFormsSubmissionsValues.belongsTo(APFieldsFixed, { as: 'fieldName', foreignKey: 'field_id' });
+
 export default APFormsSubmissionsValues;

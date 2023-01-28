@@ -1,5 +1,4 @@
 import { DataTypes } from 'sequelize';
-import School from './school';
 import sequelize from '../../config/db';
 
 const SchoolUser = sequelize.define('SchoolUser', {
@@ -28,12 +27,24 @@ const SchoolUser = sequelize.define('SchoolUser', {
     },
     school_id: {
         type: DataTypes.STRING(15),
-        allowNull: false, 
-        references: {
-			model: School,
-			key: 'id'
-		}
+        allowNull: true, 
     },
+    temp_school_id: {
+        type: DataTypes.STRING(15),
+        allowNull: true, 
+    },
+	new_school: {
+		type: DataTypes.BOOLEAN,
+		allowNull: true
+	},
+	mobile: {
+        type: DataTypes.STRING(20),
+		allowNull: false,
+		unique: true
+    },
+	status: {
+		type: DataTypes.ENUM('Not Onboarded', 'Onboared', 'Not Active'),
+	},
 	created: {
 		type: DataTypes.DATE,
         allowNull: false,
@@ -57,4 +68,3 @@ const SchoolUser = sequelize.define('SchoolUser', {
 });
 
 export default SchoolUser;
-SchoolUser.belongsTo(School, { as: 'school', foreignKey: 'school_id' }); 
