@@ -1,9 +1,11 @@
 import express from 'express'
 import * as forms from '../app/controllers/forms'
+import { auth } from "../middleware/auth";
+
 export const formsRouter = express.Router()
 
-formsRouter.get('/fieldsFixed', forms.getFieldsFixed)
-formsRouter.post('/submissions/add', forms.createFormSubmission)
-formsRouter.get('/submissions', forms.getFormSubmissions)
+formsRouter.get('/fieldsFixed', auth, forms.getFieldsFixed)
+formsRouter.post('/submissions/add', auth, forms.createFormSubmission)
+formsRouter.get('/submissions', auth, forms.getFormSubmissions)
 
 export default formsRouter

@@ -12,6 +12,14 @@ export const getSchools = {
     }),
 };  
 
+export const findSchool = {
+    query: Joi.object().keys({
+        registrationNumber: Joi.string().required(),
+        board: Joi.number().required(),
+    }),
+};  
+
+
 export const getSchoolsList = {
     query: Joi.object().keys({
         keyword: Joi.string().required(),
@@ -30,3 +38,23 @@ export const schoolShorlisted = {
         notify: Joi.string().allow('yes', 'no').optional(),
     }),
 };  
+
+
+export const schoolSelfSignup = {
+    body: Joi.object().keys({
+        name: Joi.string().required().min(2).max(20),
+        schoolName: Joi.string().required().min(2).max(100),
+        email: Joi.string().email().required(),
+        address: Joi.string().required().min(2).max(100),
+        city: Joi.string().required().min(2).max(30),
+        state: Joi.string().required().min(2).max(30),
+        pincode: Joi.string().required().length(6),
+        board: Joi.number().required(),
+        gender: Joi.string().equal('Male', 'Female', 'Co-ed').required(),
+        classes:  Joi.array().required().min(1),
+        registrationNumber: Joi.string().required(),
+        phoneNumber: Joi.string().length(10).required(),
+    }),
+};  
+
+

@@ -101,59 +101,39 @@ ADD email_expiry_time datetime;
 
 ALTER TABLE `ap_users`
 ADD email_verification_code varchar(10) unique;
--- 10 jan 23
-ALTER TABLE `ap_shortlisted_schools` 
-change school_id school_id varchar(15);
 
---12 jan 23
-CREATE TABLE `ap_fields_fixed` (
-  `id` int(11) NOT NULL auto_increment,
-  `field_name` varchar(100) NOT NULL,
-  `field_code` varchar(10) NOT NULL,
-  `field_type` varchar(100) NOT NULL COMMENT 'string, number, set, date, file, link',
-  `field_hint` text NOT NULL,
-  `special_type` varchar(100) NOT NULL COMMENT 'student_name, father_name, contact_email_contact_number, address, dob, class',
-  `field_constraints` text NOT NULL,
-  `position` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table `fields_fixed`
-INSERT INTO `ap_fields_fixed` (`id`, `field_name`, `field_code`, `field_type`, `field_hint`, `special_type`, `field_constraints`, `position`) VALUES
-(1, 'Student Name', 'sname', 'string', '', 'student_name', 'a:4:{s:10:\"min_length\";s:1:\"1\";s:10:\"max_length\";s:2:\"70\";s:9:\"multiline\";i:0;s:14:\"field_required\";i:1;}', 1),
-(2, 'Father Name', 'fname', 'string', '', 'father_name', 'a:4:{s:10:\"min_length\";s:1:\"5\";s:10:\"max_length\";s:2:\"70\";s:9:\"multiline\";i:0;s:14:\"field_required\";i:1;}', 2),
-(3, 'Mother Name', 'Mname', 'string', '', '', 'a:4:{s:10:\"min_length\";s:1:\"5\";s:10:\"max_length\";s:2:\"70\";s:9:\"multiline\";i:0;s:14:\"field_required\";i:1;}', 3),
-(4, 'Contact Email', 'Email', 'email', '', 'contact_email', 'a:1:{s:14:\"field_required\";i:1;}', 4),
-(5, 'Contact Mobile Number', 'mobile', 'number', '', 'contact_number', 'a:6:{s:9:\"min_value\";s:0:\"\";s:9:\"max_value\";s:0:\"\";s:10:\"min_length\";s:2:\"10\";s:10:\"max_length\";s:2:\"10\";s:10:\"is_integer\";i:1;s:14:\"field_required\";i:1;}', 5),
-(6, 'Residance Address', 'R_address', 'string', '', 'address', 'a:4:{s:10:\"min_length\";s:1:\"5\";s:10:\"max_length\";s:3:\"250\";s:9:\"multiline\";i:1;s:14:\"field_required\";i:1;}', 6),
-(7, 'Annual Income', 'Income', 'number', '', '', 'a:6:{s:9:\"min_value\";s:0:\"\";s:9:\"max_value\";s:0:\"\";s:10:\"min_length\";s:1:\"1\";s:10:\"max_length\";s:2:\"10\";s:10:\"is_integer\";i:1;s:14:\"field_required\";i:1;}', 7),
-(9, 'Religion', 'religion', 'set', '', '', 'a:2:{s:3:\"set\";s:54:\"Hindu\r\nMuslim\r\nChristian\r\nJain\r\nBuddhism\r\nJews\r\nOthers\";s:14:\"field_required\";i:1;}', 9),
-(10, 'Class', 'class', 'set', '', 'class', 'a:2:{s:3:\"set\";s:0:\"\";s:14:\"field_required\";i:1;}', 10),
-(13, 'Date of Birth', 'DoB', 'date', '', 'dob', 'a:3:{s:9:\"min_value\";s:10:\"17-12-2017\";s:9:\"max_value\";s:10:\"01-01-1997\";s:14:\"field_required\";i:1;}', 11),
-(14, 'Aadhaar Number', 'Aadhaar', 'number', '', '', 'a:6:{s:9:\"min_value\";s:0:\"\";s:9:\"max_value\";s:0:\"\";s:10:\"min_length\";s:0:\"\";s:10:\"max_length\";s:2:\"13\";s:10:\"is_integer\";i:0;s:14:\"field_required\";i:1;}', 12);
---
-CREATE TABLE `ap_forms_submissions` (
-  `id` varchar(12) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-  `school_id` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `class_id` SMALLINT(11) NOT NULL, 
-  `user_id` int(11) NOT NULL DEFAULT '0',
-  `status` tinyint(4) NOT NULL COMMENT '0 == not approved, 1 == approved, 2 == declined, 3 == deleted',
-  `payment_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 == not paid, 1 == paid',
+--------------------------------------------------------
+
+
+CREATE TABLE `ap_schools_temp` (
+  `id` varchar(15) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `affiliation_no` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `board_id` smallint NOT NULL,
+  `head` varchar(255) NOT NULL,
+  `gender_accepted` set('Female','Male','Co-ed') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `residency_type` set('Day','Boarding','Day And Boarding') CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `medium` varchar(100) NOT NULL,
+  `classes` json NOT NULL,
+  `facilities` json DEFAULT NULL,
+  `address` varchar(255) NOT NULL,
+  `pincode` varchar(10) NOT NULL,
+  `location` json NOT NULL,
+  `geolocation` point DEFAULT NULL,
+  `phone` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `established` year DEFAULT NULL,
+  `about` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `admission_process` json DEFAULT NULL,
+  `achievements` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '1 == active, 2 == not active',
   `created` datetime NOT NULL,
+  `updated` datetime NOT NULL,
+  `admission_status` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`school_id`) REFERENCES `ap_schools` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  FOREIGN KEY (`class_id`) REFERENCES `ap_classes` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  FOREIGN KEY (`user_id`) REFERENCES `ap_users` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
---
-CREATE TABLE `ap_forms_submissions_values` (
-  `id` int(11) NOT NULL auto_increment ,
-  `submission_id` varchar(12) NOT NULL,
-  `field_id` int(11) NOT NULL,
-  `field_value` text NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`submission_id`) REFERENCES `ap_forms_submissions` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  UNIQUE KEY `affiliation_no` (`affiliation_no`,`board_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
-ALTER TABLE `forms_submissions_values`
-  ADD UNIQUE KEY `ap_fsv_all` (`submission_id`,`field_id`,`field_value`(576));
+DROP TABLE `ap_school_users`
