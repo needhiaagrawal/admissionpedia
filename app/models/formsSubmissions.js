@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db';
 import School from './school';
 import Class from './classes';
-import User from './user';
+import SchoolUser from './schoolUsers';
 
 const APFormsSubmissions = sequelize.define('APFormsSubmissions', {
 	id: {
@@ -30,7 +30,7 @@ const APFormsSubmissions = sequelize.define('APFormsSubmissions', {
 		type: DataTypes.SMALLINT(6),
 		allowNull: false,
         references: {
-			model: User,
+			model: SchoolUser,
 			key: 'id'
 		}
 	},
@@ -58,4 +58,4 @@ export default APFormsSubmissions;
 
 APFormsSubmissions.belongsTo(School, { as: 'school', foreignKey: 'school_id' }); 
 APFormsSubmissions.belongsTo(Class,  { as: 'className', foreignKey: 'class_id'});
-APFormsSubmissions.belongsTo(User, { as: 'user', foreignKey: 'user_id' }); 
+APFormsSubmissions.belongsTo(SchoolUser, { as: 'schoolUser', foreignKey: 'user_id' }); 

@@ -248,12 +248,11 @@ export const loginService = async (username, password, usernameType) => {
     }
 
 }
-
 export const schoolLoginService = async (username, password) => {
 
     try {
-        const user = await SchoolUser.findOne({ attributes: ["name", "id", "email","email_verified", "password"], where: { email: username } });
-
+        const user = await SchoolUser.findOne({ attributes: ["name", "id", "email","email_verified", "password","status"], 
+        where: { email: username, status: "Onboared" } });
         if (user) {
             const userData = user.toJSON();
             const isPasswordCorrect = bcrypt.compareSync(password, userData.password);
@@ -281,4 +280,9 @@ export const schoolLoginService = async (username, password) => {
 
     }
 
+}
+
+export const getSchoolUser = async(userId) => {
+    const user = await SchoolUser.findOne({ where: { id: userId } });
+    return user ? user : false
 }

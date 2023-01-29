@@ -238,16 +238,27 @@ export const createFormSubmission = async (token, dataFields) => {
 };
 
 export const getFormSubmissions = async (token, dataFields) => {
-  let userDataFromToken = getDecodedToken(token);
   const { schoolId, classId } = dataFields;
-  let submissions = await FormsSubmissions.findAll({
-    where: {
-      school_id: schoolId,
-      class_id: classId,
-      user_id: userDataFromToken.userId,
-    },
-    raw: true,
-  });
+  let submissions = [];
+  if(dataFields.groupBy){
+    let userFromToken = getDecodedToken(token);
+    submissions = await FormsSubmissions.findAll({
+      where: {
+        school_id: schoolId,
+        class_id: classId,
+        user_id: userFromToken.userId,
+      },
+      raw: true
+    });
+  }else{
+    submissions = await FormsSubmissions.findAll({
+      where: {
+        school_id: schoolId,
+        class_id: classId
+      },
+      raw: true,
+    });
+  }
   for (let i = 0; i < submissions.length; i += 1) {
     let fieldValues = await FormsSubmissionValues.findAll({
       where: { submission_id: submissions[i].id },
@@ -261,15 +272,11 @@ export const getFormSubmissions = async (token, dataFields) => {
           raw: false
         }
     });
-
     fieldValues = fieldValues.map((row) => {
       const fieldData = row.toJSON();
       return { ...fieldData, fieldName: fieldData.fieldName?.field_name }
     })
-    if (fieldValues) {
-      submissions[i]["values"] = _.groupBy(fieldValues, 'submission_id');
-      
-    }
+    submissions[i]['values'] = fieldValues
   }
   return submissions;
 };
