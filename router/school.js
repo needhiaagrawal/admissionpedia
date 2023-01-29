@@ -8,7 +8,7 @@ import { auth } from "../middleware/auth";
 
 schoolRouter.get('/findSchool', validate(schoolValidator.findSchool), school.findSchoolByRegistrationNumber)
 schoolRouter.post('/selfSignupSchool', validate(schoolValidator.schoolSelfSignup), school.selfSignupSchool)
-
+schoolRouter.post('/selfSignupSchoolAdmin', validate(schoolValidator.selfSignupSchoolAdmin), school.selfSignupSchoolAdmin)
 schoolRouter.get('/list', auth, validate(schoolValidator.getSchoolsList), school.getSchoolsForAuthorizedUser);
 schoolRouter.get('/shortlisted/:schoolId', auth, validate(schoolValidator.schoolShorlisted), school.schoolShortlisted);
 schoolRouter.get('/shortlisted', auth, school.getShortlistedSchool);

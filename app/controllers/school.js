@@ -6,7 +6,8 @@ import {
     shortlistedSchool,
     getSchoolsListService,
     getSchoolByRegistrationNumber,
-    selfSignUpSchoolService
+    selfSignUpSchoolService,
+    selfSignUpSchoolUserService
   } from "../service/school";
   import { STANDARD_SEARCH_LIMIT } from "../helper/constant";
   import httpStatus from "http-status";
@@ -161,7 +162,7 @@ import {
 
   export const selfSignupSchoolAdmin = async (req, res) => {
     try {
-      const dbResult = await selfSignUpSchoolService(req.body);
+      const dbResult = await selfSignUpSchoolUserService(req.body);
       res.status(httpStatus.OK).send(dbResult);
     } catch (err) {
       logger.error("Error in req getSchoolsForAuthorizedUser" + err.toString());

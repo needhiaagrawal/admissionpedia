@@ -591,3 +591,47 @@ export const selfSignUpSchoolService = async (data) => {
       }
     }
 }
+
+export const selfSignUpSchoolUserService = async (data) => {
+  const {
+    name,
+    email,
+    phoneNumber,
+    schoolId,
+  } = data;
+
+  try {
+
+    const schoolData  = await School.findOne({ 
+      where: { id: schoolId}
+    });
+
+    if (!schoolData) {
+      return {
+        success: false, 
+        message: 'School Not found'
+      }
+    }
+    const schoolUser = await SchoolUser.create({
+      name: name,
+      password: "",
+      mobile: phoneNumber,
+      email: email,
+      school_id: schoolId,
+      new_school: 0, 
+      status: "Not Onboarded"
+    })
+  
+    return {
+      success: true, 
+      message: 'School User is created successfully.'
+    }
+  } catch(err) {
+    logger.info('Error during self signup school user'+err)
+    return {
+      success: false, 
+      message: 'Something went wrong'
+    }
+  }
+
+}

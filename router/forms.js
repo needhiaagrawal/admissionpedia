@@ -6,7 +6,7 @@ import { schoolAuth } from "../middleware/schoolAuth";
 export const formsRouter = express.Router()
 
 formsRouter.get('/fieldsFixed', auth, forms.getFieldsFixed)
-formsRouter.post('/submissions/add', schoolAuth, forms.createFormSubmission)
-formsRouter.get('/submissions', schoolAuth, forms.getFormSubmissions)
+formsRouter.post('/submissions/add', auth, forms.createFormSubmission)
+formsRouter.get('/submissions', auth, forms.getFormSubmissions)
 
 export default formsRouter

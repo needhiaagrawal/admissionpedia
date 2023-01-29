@@ -8,6 +8,7 @@ import  phpUnserialize from 'phpunserialize';
 import { uid } from 'uid';
 import moment from "moment";
 import logger from "../../config/loggerconfig";
+import User from "../models/user";
 
 const getDecodedFieldConstraints = (str) => {
   var result = phpUnserialize(str);
@@ -240,25 +241,14 @@ export const createFormSubmission = async (token, dataFields) => {
 export const getFormSubmissions = async (token, dataFields) => {
   const { schoolId, classId } = dataFields;
   let submissions = [];
-  if(dataFields.groupBy){
-    let userFromToken = getDecodedToken(token);
-    submissions = await FormsSubmissions.findAll({
-      where: {
-        school_id: schoolId,
-        class_id: classId,
-        user_id: userFromToken.userId,
-      },
-      raw: true
-    });
-  }else{
-    submissions = await FormsSubmissions.findAll({
-      where: {
-        school_id: schoolId,
-        class_id: classId
-      },
-      raw: true,
-    });
-  }
+  submissions = await FormsSubmissions.findAll({
+    where: {
+      school_id: schoolId,
+      class_id: classId
+    },
+    raw: true,
+  });
+  
   for (let i = 0; i < submissions.length; i += 1) {
     let fieldValues = await FormsSubmissionValues.findAll({
       where: { submission_id: submissions[i].id },
@@ -278,5 +268,31 @@ export const getFormSubmissions = async (token, dataFields) => {
     })
     submissions[i]['values'] = fieldValues
   }
+
+  if(dataFields.groupBy) {
+    submissions = _.groupBy(submissions, 'user_id');
+
+    let newSubmissions = [];
+
+    await Promise.all(Object.entries(submissions).map(async ([key, value], index) => {
+
+      const userId = parseInt(key);
+      const userData =  await User.findOne({ attributes: ["name"], where: { id: userId }});
+
+      if(!userData) return;
+
+      const userObject = {
+        userId,
+        name:  userData.toJSON().name,
+        submissions: value
+      }
+
+      newSubmissions.push(userObject);
+      return;
+    }));
+
+    submissions = newSubmissions;
+  }
+
   return submissions;
 };
