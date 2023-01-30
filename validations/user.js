@@ -47,3 +47,9 @@ export const resetPassword = {
         otp: Joi.string().length(6).required()
     })
 }
+export const changePassword = {
+    body: Joi.object().keys({
+        oldPassword: Joi.string().required().min(8).max(20).alphanum(),
+        newPassword: Joi.string().required().min(8).max(20).alphanum()
+    })
+}

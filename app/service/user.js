@@ -7,6 +7,8 @@ import { sendEmailOtp } from "../helper/sendEmail";
 import { generateToken } from "../../utils/user";
 import { sendOtpToMobile } from "../helper/sendOtp";
 import SchoolUser from "../models/schoolUsers";
+import { getDecodedToken } from "../../utils/user";
+import { MESSAGES } from "../../utils/messages";
 export const generateOtp = async () => {
     return stackOtp.numericOtp(6);
 }
@@ -114,6 +116,31 @@ export const resetPasswordService = async (newPassword, userId, otp) => {
     } catch (err) { "something went wrong";
         console.log('Error in reset Service', err)
         return "something went wrong";
+    }
+}
+
+export const changePasswordService = async (token, oldPassword, newPassword) => {
+    const userDetial = await getDecodedToken(token);
+    if (userDetial && userDetial.userId) {
+        const userId = userDetial.userId;
+        const isMatch = await checkOldPassword(oldPassword, userId);
+        if (!isMatch) {
+            throw Error(MESSAGES.INVALID_PWD);
+        } else {
+            //update password
+            const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+            const encryptedPassword = bcrypt.hashSync(newPassword, salt);
+            const user = await User.update({ password: encryptedPassword },
+                {
+                    where: { id: userId }
+                });
+            if(user){
+                return "Password updated successfully.";
+            }
+            throw Error("something went wrong");
+        }
+    } else {
+        throw Error(MESSAGES.INVALID_TOKEN);
     }
 }
 

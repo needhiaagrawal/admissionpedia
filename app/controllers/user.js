@@ -25,7 +25,8 @@ import {
     resetPasswordService,
     isPasswordOtpCorrect,
     isPasswordResetCodeExpired,
-    schoolLoginService
+    schoolLoginService,
+    changePasswordService
 } from '../service/user';
 
 
@@ -321,7 +322,28 @@ export const schoolLogin = async (req, res) => {
     res.status(httpStatus.OK).send({ success: true, token: userData })
     return userData
   } catch (err) {
-    logger.info('Error: ', +err)
+    logger.info('Error: '+err)
     res.status(httpStatus.BAD_REQUEST).send('something went wrong')
   }
+}
+
+export const changePassword = async (req, res) => {
+    try {
+        const token =(req.headers.authorization && req.headers.authorization.split(" ")[1]) || "";
+        const { oldPassword, newPassword } = req.body;
+        const resp = await changePasswordService(
+            token,
+            oldPassword,
+            newPassword
+        );
+        res.status(httpStatus.OK).send({
+            success: true,
+            message: resp,
+            data: "",
+        });
+        return;
+    } catch (err) {
+        logger.info('Error: ' + err)
+        res.status(httpStatus.BAD_REQUEST).send({ success: false, message: 'something went wrong' })
+    }
 }
