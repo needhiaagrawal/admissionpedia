@@ -296,3 +296,35 @@ export const getFormSubmissions = async (token, dataFields) => {
 
   return submissions;
 };
+
+export const getSubmissionsByUser = async (token) => {
+  let userDataFromToken = getDecodedToken(token);
+  let submissions = [];
+  submissions = await FormsSubmissions.findAll({
+    where: {
+      user_id: userDataFromToken.userId
+    },
+    raw: true,
+  });
+  
+  for (let i = 0; i < submissions.length; i += 1) {
+    let fieldValues = await FormsSubmissionValues.findAll({
+      where: { submission_id: submissions[i].id },
+      include: 
+        {
+          model: FieldsFixed,
+          attributes: [
+            'field_name',
+          ],
+          as: 'fieldName',
+          raw: false
+        }
+    });
+    fieldValues = fieldValues.map((row) => {
+      const fieldData = row.toJSON();
+      return { ...fieldData, fieldName: fieldData.fieldName?.field_name }
+    })
+    submissions[i]['values'] = fieldValues
+  }
+  return submissions;
+};

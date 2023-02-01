@@ -36,3 +36,15 @@ export const getFormSubmissions = async (req, res) => {
     }
   }
   
+  export const getSubmissionsByUser = async (req, res) => {
+    try {
+      const token =(req.headers.authorization && req.headers.authorization.split(" ")[1]) || "";
+      const dbResult = await forms.getSubmissionsByUser(token)
+      logger.info('getFormSubmissions By user successful', dbResult.toString())
+      res.status(httpStatus.OK).send(dbResult)
+    } catch (err) {
+      logger.error('Error in req getFormSubmissions by user',+  err.toString())
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Something went wrong')
+    }
+  }
+  

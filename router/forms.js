@@ -8,5 +8,5 @@ export const formsRouter = express.Router()
 formsRouter.get('/fieldsFixed', auth, forms.getFieldsFixed)
 formsRouter.post('/submissions/add', auth, forms.createFormSubmission)
 formsRouter.get('/submissions', auth, forms.getFormSubmissions)
-
+formsRouter.get('/user/submissions', auth, forms.getSubmissionsByUser)
 export default formsRouter
