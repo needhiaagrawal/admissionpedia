@@ -278,7 +278,7 @@ export const loginService = async (username, password, usernameType) => {
 export const schoolLoginService = async (username, password) => {
 
     try {
-        const user = await SchoolUser.findOne({ attributes: ["name", "id", "email","email_verified", "password","status"], 
+        const user = await SchoolUser.findOne({ attributes: ["name", "id", "email","email_verified", "password","status","school_id"], 
         where: { email: username, status: "Onboared" } });
         if (user) {
             const userData = user.toJSON();
@@ -293,6 +293,7 @@ export const schoolLoginService = async (username, password) => {
                     mobile: user.mobile,
                     mobile_verified: user.mobile_verified,
                     email_verified: user.email_verified,
+                    school_id: userData.school_id,
                     role: "school-admin"
                 });
 
