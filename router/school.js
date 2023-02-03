@@ -12,6 +12,7 @@ schoolRouter.post('/selfSignupSchoolAdmin', validate(schoolValidator.selfSignupS
 schoolRouter.get('/list', auth, validate(schoolValidator.getSchoolsList), school.getSchoolsForAuthorizedUser);
 schoolRouter.get('/shortlisted/:schoolId', auth, validate(schoolValidator.schoolShorlisted), school.schoolShortlisted);
 schoolRouter.get('/shortlisted', auth, school.getShortlistedSchool);
+schoolRouter.get('/applied', auth, school.getAppliedSchoolForUser);
 schoolRouter.get('/search-filters', school.getSearchFilter);
 schoolRouter.get('/:schoolId', school.getSchoolDetails);
 schoolRouter.get('/', validate(schoolValidator.getSchools), school.getSchools);

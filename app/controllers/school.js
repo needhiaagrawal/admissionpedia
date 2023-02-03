@@ -7,7 +7,8 @@ import {
     getSchoolsListService,
     getSchoolByRegistrationNumber,
     selfSignUpSchoolService,
-    selfSignUpSchoolUserService
+    selfSignUpSchoolUserService,
+    getAppliedSchools
   } from "../service/school";
   import { STANDARD_SEARCH_LIMIT } from "../helper/constant";
   import httpStatus from "http-status";
@@ -166,6 +167,23 @@ import {
       res.status(httpStatus.OK).send(dbResult);
     } catch (err) {
       logger.error("Error in req getSchoolsForAuthorizedUser" + err.toString());
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Something went wrong");
+    }
+  };
+
+  export const getAppliedSchoolForUser = async (req, res) => {
+    try {
+      const token =
+        (req.headers.authorization && req.headers.authorization.split(" ")[1]) ||
+        "";
+      const dbResult = await getAppliedSchools(token);
+      logger.info("getAppliedSchoolForUser successful" + JSON.stringify(dbResult));
+      res.status(httpStatus.OK).send({
+        success: true,
+        data: dbResult,
+      });
+    } catch (err) {
+      logger.error("Error in req getAppliedSchoolForUser" + err.toString());
       res.status(httpStatus.INTERNAL_SERVER_ERROR).send("Something went wrong");
     }
   };

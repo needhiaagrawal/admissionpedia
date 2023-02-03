@@ -6,6 +6,7 @@ import Facilities from "../models/facilities";
 import State from "../models/state";
 import Country from "../models/country";
 import ClassAdmission from "../models/schoolClassAdmission";
+import FormsSubmissions from "../models/formsSubmissions";
 import { Op } from "sequelize";
 import { getBoardList } from "./board";
 import { getClassesList } from "./class";
@@ -635,3 +636,50 @@ export const selfSignUpSchoolUserService = async (data) => {
   }
 
 }
+
+
+export const getAppliedSchools = async (token) => {
+  let userDataFromToken = getDecodedToken(token);
+  let rows = await FormsSubmissions.findAll({
+    attributes: ["payment_status", "status", "school_id", "class_id"],
+    where: {
+      user_id: userDataFromToken.userId,
+    },
+    include: [
+      {
+        model: School,
+        attributes: [
+          "name",
+          "address",
+          "gender_accepted",
+          "residency_type",
+          "admission_status",
+        ],
+        as: "school",
+        raw: false,
+      },
+      {
+        model: APClass,
+        attributes: ["name", "id"],
+        as: "className",
+        raw: false,
+      },
+    ],
+  });
+  if (rows) {
+    const newRows = await Promise.all(
+      rows.map((row) => {
+        const data = row.toJSON();
+        const { school, className, ...rest } = data;
+        return {
+          ...school,
+          className: className.name,
+          ...rest
+        };
+      })
+    );
+
+    return newRows;
+  }
+  return rows;
+};
